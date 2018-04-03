@@ -156,13 +156,17 @@ extension UIViewController {
     }
     
     func getBottomConstrainsts() -> [NSLayoutConstraint] {
-        var consts:[NSLayoutConstraint] = []
-        for each in self.view.constraints {
-            if (each.firstItem === self.bottomLayoutGuide && each.firstAttribute == .top && each.secondAttribute == .bottom) || (each.secondItem === self.bottomLayoutGuide && each.secondAttribute == .top && each.firstAttribute == .bottom) {
-                consts.append(each)
-            }
+        return view.constraints.filter { isBottomConstraint($0) }
+    }
+    
+    func isBottomConstraint(_ constraint: NSLayoutConstraint) -> Bool {
+        if #available(iOS 11.0, *), constraint.firstItem === view.safeAreaLayoutGuide && constraint.firstAttribute == .bottom && constraint.secondAttribute == .bottom {
+            return true
+        } else if (constraint.firstItem === bottomLayoutGuide && constraint.firstAttribute == .top && constraint.secondAttribute == .bottom)
+            || (constraint.secondItem === bottomLayoutGuide && constraint.secondAttribute == .top && constraint.firstAttribute == .bottom) {
+            return true
         }
-        return consts
+        return false
     }
     
     private func decodeNotification(notification: NSNotification, status: KeyboardStatus) -> KeyboardResult? {
